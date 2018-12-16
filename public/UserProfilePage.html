@@ -24,8 +24,8 @@
 
     <link rel="stylesheet" href="css/nav.css">
 
-
-    <!-- Optional JavaScript -->
+    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
+    <!-- <script src="js/app.js"></script> -->
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -72,6 +72,7 @@
                     </li>
                     <li><a class="btn btn-link-3" href="Sign-in.html">LOG IN</a></li>
                     <li><a class="btn btn-link-3" href="Sign-up.html">SIGN UP</a></li>
+                    <li><a id = "signout"  class="btn btn-link-3" >SIGN OUT</a></li>
                 </ul>
             </div>
         </div>
@@ -94,7 +95,7 @@
             <div class="col-md-3 card ">
                 <img class="card-img-top imageShadow" src="images/bio.jpg" alt="Card image">
                 <div class="card-body cardShadow">
-                    <h3 class="card-title legendFont">John Doe</h3>
+                    <h3 id="userName" class="card-title legendFont"></h3>
                     <br />
                     <b class="SubheadingFont">About</b>
                     <hr>
@@ -103,15 +104,15 @@
                     <hr>
                     <div class="info">
                         <img class="userIcons" src="https://simpleicons.org/icons/whatsapp.svg" />
-                        <span class="textual">+923319755555<br /></span>
+                        <span id = "userContact" class="textual">+923319755555<br /></span>
                     </div>
                     <div class="info">
                         <img class="userIcons" src="https://simpleicons.org/icons/facebook.svg" />
-                        <span class="textual">JohnDoe<br /></span>
+                        <span id = "userName" class="textual">JohnDoe<br /></span>
                     </div>
                     <div class="info">
                         <img class="userIcons" src="https://simpleicons.org/icons/instagram.svg" />
-                        <span class="textual">JohnDude<br /></span>
+                        <span id = "userName" class="textual">JohnDude<br /></span>
                     </div>
                 </div>
             </div>
@@ -712,6 +713,83 @@
             </div>
         </section>
     </footer>
+
+    <script>
+
+
+
+        var config = {
+        apiKey: "AIzaSyBerqgdPGGc4xkX-GSju3Xnxcla3vU_jU4",
+        authDomain: "syrup-6e640.firebaseapp.com",
+        databaseURL: "https://syrup-6e640.firebaseio.com",
+        projectId: "syrup-6e640",
+        storageBucket: "syrup-6e640.appspot.com",
+        messagingSenderId: "428019578808"
+    };
+    firebase.initializeApp(config);
+
+     window.onload = function () {
+
+         userDataDisplay();
+         signoutUser();
+     };
+
+         function signoutUser(){
+
+            document.getElementById('signout').addEventListener('click', function(){
+                firebase.auth().signOut();
+                location.href="Sign-in.html";
+            });
+
+         }
+
+        function userDataDisplay(){
+
+                        //var user = firebase.auth().currentUser;
+            const displayName = document.getElementById("userName");
+            const displayContact = document.getElementById("usercontact");
+
+            //Create references
+            // const dbRefUsers = firebase.database().ref().child("UserInfo");
+
+            // dbRefUsers.on("value", function(snapshot){
+            //     snapshot.forEach(function(childSnapshot){
+
+                firebase.auth().onAuthStateChanged(function(user) {
+
+                if (user) {
+                    console.log(user);
+                    var userEmail = firebase.auth().currentUser.email;
+                    console.log(userEmail);
+                    firebase.database().ref('UserInfo').once('value').then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot){
+                        if(userEmail === childSnapshot.val().email){
+                            var username = (childSnapshot.val().username);
+                            displayName.innerText = username;
+
+                            //var usercontact = (childSnapshot.val().contact);
+                            //displayContact.innerText = usercontact;
+
+
+                            //console.log(childSnapshot.val().usercontact);
+                        }
+
+  });
+});
+
+                }
+
+
+                else {
+                    // No user is signed in.
+                    console.log("nothing");
+                }
+    });
+
+        }
+
+
+    </script>
 
 
 </body>
